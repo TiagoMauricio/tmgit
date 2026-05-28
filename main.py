@@ -1,5 +1,5 @@
 import json, os, time, typer, subprocess
-import helpers.constants as constants
+import helpers.constants as constants, helpers.git_operations as git_operations
 from pathlib import Path
 from platformdirs import PlatformDirs
 from rich.progress import track
@@ -49,16 +49,7 @@ def config():
 @app.command("sync")
 def sync(target: Annotated[SyncTarget, typer.Argument(help=constants.HELP_SYNC_TARGET)]):
     if target == "current":
-        cwd_git_file = Path.cwd()/".git"
-        if not cwd_git_file.exists():
-            print("This is not a git repo. Abort...")
-            exit(1)
-        result = subprocess.run(["git","pull", "origin", "HEAD" ], capture_output=True, text=True)
-        if result.returncode == 0:
-            typer.echo(result.stdout)
-        else:
-            typer.echo(result.stderr)
-
+        return git_operations.sync_current()
 if __name__ == "__main__":
     _load_config()
     app()
