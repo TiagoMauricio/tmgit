@@ -45,3 +45,8 @@ def sync_workspace():
 
 def sync_repo():
     print("this is sync repo")
+
+#TODO: handle output
+def send():
+    _check_if_git()
+    return _execute("git push origin HEAD")

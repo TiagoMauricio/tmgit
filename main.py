@@ -29,7 +29,7 @@ class SyncTarget(str, Enum):
     current = "current"
 
 
-TARGET_FUNCTIONS = {
+SYNC_TARGET_FUNCTIONS = {
     SyncTarget.current: git_operations.sync_current,
     SyncTarget.workspace: git_operations.sync_workspace,
     SyncTarget.repo: git_operations.sync_repo,
@@ -65,8 +65,11 @@ def config():
 def sync(
     target: Annotated[SyncTarget, typer.Argument(help=constants.HELP_SYNC_TARGET)],
 ):
-    return TARGET_FUNCTIONS[target]()
+    return SYNC_TARGET_FUNCTIONS[target]()
 
+@app.command("send")
+def send():
+    return git_operations.send()
 
 if __name__ == "__main__":
     _load_config()
