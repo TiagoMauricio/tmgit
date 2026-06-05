@@ -20,21 +20,10 @@ class SyncTarget(str, Enum):
     workspace = "ws"
     current = "current"
 
-class ConfigOperations(str, Enum):
-    add = "add"
-    remove = "rm"
-    edit = "edit"
-
 # Function Mappers
 SYNC_TARGET_FUNCTIONS = {
     SyncTarget.current: git_operations.sync_current,
     SyncTarget.workspace: git_operations.sync_workspace,
-}
-
-CONFIG_OPERATIONS_FUNCTIONS = {
-    ConfigOperations.add: tmconfig.add,
-    ConfigOperations.remove: tmconfig.remove,
-    ConfigOperations.edit: tmconfig.edit
 }
 
 # Functions
