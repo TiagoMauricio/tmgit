@@ -67,9 +67,9 @@ def sync(
 ):
     return SYNC_TARGET_FUNCTIONS[target]()
 
-@app.command("send")
-def send():
-    return git_operations.send()
+@app.command("send", help="Pushes to current HEAD branch. If [-m|--message] is provided, commits the tracked changed files using the using -am option")
+def send(message: Annotated[str, typer.Option("-m", "--message", help="Commit message to push directly to current branch.")] = None):
+    return git_operations.send(message)
 
 if __name__ == "__main__":
     _load_config()

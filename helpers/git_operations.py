@@ -5,11 +5,12 @@ from rich import print
 
 import typer
 
-#TODO: add a function to handle output
-
-def _execute(command_string: str):
-    print(f"[green]Executing:[/green] {command_string}")
-    result = subprocess.run(command_string.split(), capture_output=True, text=True)
+# I know functions are usually supposed to do only one thing
+# however it seems a bit overkill to implement a function just
+# to handle output
+def _execute(command_list: list):
+    print(f"[green]Executing:[/green] {command_list}")
+    result = subprocess.run(command_list, capture_output=True, text=True)
     if result.returncode == 0:
         print(result.stdout)
         return(result)
@@ -33,10 +34,13 @@ def _fetch_current():
         print(f"[red]Failed to fetch current branch with err: {result.stderr}[/red]")
         exit(1)
 
+def _commit_current(message: str):
+    return _execute(["git", "commit", "-am", message])
+
 def sync_current():
     _check_if_git()
     current_branch = _fetch_current()
-    return _execute(f"git pull origin {current_branch}")
+    return _execute(["git", "pull", "origin", current_branch])
 
 
 def sync_workspace():
@@ -46,7 +50,8 @@ def sync_workspace():
 def sync_repo():
     print("this is sync repo")
 
-#TODO: handle output
-def send():
+def send(message):
     _check_if_git()
-    return _execute("git push origin HEAD")
+    if message:
+        _commit_current(message)
+    return _execute("git", "push", "origin", "HEAD")
