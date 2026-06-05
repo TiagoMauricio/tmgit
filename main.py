@@ -14,7 +14,6 @@ import helpers.config as tmconfig
 app = typer.Typer(no_args_is_help=True)
 app.add_typer(tmconfig.app, name="config", help="Configure your workspaces")
 
-
 # Enums
 class SyncTarget(str, Enum):
     workspace = "ws"

@@ -2,8 +2,11 @@ import subprocess
 from pathlib import Path
 from turtle import resetscreen
 from rich import print
+from rich.console import Console
 
 import typer
+
+err_console = Console(stderr=True)
 
 # I know functions are usually supposed to do only one thing
 # however it seems a bit overkill to implement a function just
@@ -15,14 +18,14 @@ def _execute(command_list: list):
         print(result.stdout)
         return(result)
     else:
-        print(f"[red]{result.stderr}[/red]")
+        err_console.print(f"[red]{result.stderr}[/red]")
         exit(1)
 
 
 def _check_if_git():
     cwd_git_file = Path.cwd() / ".git"
     if not cwd_git_file.exists():
-        print("[red]This is not a git repo. Abort...[/red]")
+        err_console.print("[red]This is not a git repo. Abort...[/red]")
         exit(1)
 
 
@@ -31,7 +34,7 @@ def _fetch_current():
     if result.returncode == 0:
         return result.stdout.rstrip()
     else:
-        print(f"[red]Failed to fetch current branch with err: {result.stderr}[/red]")
+        err_console.print(f"[red]Failed to fetch current branch with err: {result.stderr}[/red]")
         exit(1)
 
 def _commit_current(message: str):
