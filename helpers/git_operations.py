@@ -54,4 +54,4 @@ def send(message):
     _check_if_git()
     if message:
         _commit_current(message)
-    return _execute("git", "push", "origin", "HEAD")
+    return _execute(["git", "push", "origin", "HEAD"])
