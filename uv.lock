@@ -96,7 +96,7 @@ wheels = [
 [[package]]
 name = "tmgit"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "platformdirs" },
     { name = "typer" },

@@ -5,9 +5,9 @@ from rich import print
 
 import typer
 
-import helpers.constants as constants
-import helpers.git_operations as git_operations
-import helpers.config as tmconfig
+import tmgit.helpers.constants as constants
+import tmgit.helpers.git_operations as git_operations
+import tmgit.helpers.config as tmconfig
 
 
 # App inits
