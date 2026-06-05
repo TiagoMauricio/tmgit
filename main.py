@@ -1,76 +1,57 @@
 import json
 from enum import Enum
-from pathlib import Path
 from typing import Annotated
+from rich import print
 
 import typer
-from platformdirs import PlatformDirs
 
 import helpers.constants as constants
 import helpers.git_operations as git_operations
+import helpers.config as tmconfig
 
-CONFIG_FILE_NAME = "config.json"
-CONFIG_DIR = Path(PlatformDirs("tmgit").user_config_dir)
-CONFIG_FILE = CONFIG_DIR / CONFIG_FILE_NAME
-DEFAULT_GIT_DIR = Path.home() / "git"
-
-# print(DEFAULT_GIT_DIR)
-
-CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
 # App inits
 app = typer.Typer(no_args_is_help=True)
+app.add_typer(tmconfig.app, name="config", help="Configure your workspaces")
 
 
 # Enums
 class SyncTarget(str, Enum):
-    repo = "repo"
     workspace = "ws"
     current = "current"
 
+class ConfigOperations(str, Enum):
+    add = "add"
+    remove = "rm"
+    edit = "edit"
 
+# Function Mappers
 SYNC_TARGET_FUNCTIONS = {
     SyncTarget.current: git_operations.sync_current,
     SyncTarget.workspace: git_operations.sync_workspace,
-    SyncTarget.repo: git_operations.sync_repo,
 }
 
+CONFIG_OPERATIONS_FUNCTIONS = {
+    ConfigOperations.add: tmconfig.add,
+    ConfigOperations.remove: tmconfig.remove,
+    ConfigOperations.edit: tmconfig.edit
+}
 
 # Functions
-def _init_config():
-    return {"git_ws_dir": str(DEFAULT_GIT_DIR)}
+@app.command(help="Lists configured workspaces")
+def list():
+    print(tracked_workspaces)
 
-
-def _load_config():
-    if CONFIG_FILE.exists():
-        # print(f"Loading current config file: {CONFIG_FILE}")
-        return json.loads(CONFIG_FILE.read_text())
-
-        # print(f"Config file does not exist. Creating config at: {CONFIG_FILE}")
-    new_config = _init_config()
-    _save_config(new_config)
-    return new_config
-
-
-def _save_config(config: dict):
-    CONFIG_FILE.write_text(json.dumps(config, indent=2))
-
-
-@app.command()
-def config():
-    print("Running config")
-
-
-@app.command("sync")
+@app.command("sync", help=constants.HELP_SYNC_COMMAND)
 def sync(
     target: Annotated[SyncTarget, typer.Argument(help=constants.HELP_SYNC_TARGET)],
 ):
     return SYNC_TARGET_FUNCTIONS[target]()
 
-@app.command("send", help="Pushes to current HEAD branch. If [-m|--message] is provided, commits the tracked changed files using the using -am option")
+@app.command("send", help=constants.HELP_SEND_COMMAND)
 def send(message: Annotated[str, typer.Option("-m", "--message", help="Commit message to push directly to current branch.")] = None):
     return git_operations.send(message)
 
 if __name__ == "__main__":
-    _load_config()
+    tmconfig.load_config()
     app()
