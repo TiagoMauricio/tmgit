@@ -8,3 +8,6 @@ dependencies = [
     "platformdirs>=4.10.0",
     "typer>=0.25.1",
 ]
+
+[project.scripts]
+tmgit = "tmgit.main:app"
