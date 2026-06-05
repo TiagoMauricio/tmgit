@@ -1,7 +1,6 @@
 # That's My Git
 
-`tmgit` is a git wrapper built with [Typer](https://typer.tiangolo.com/) to automate the commands I use the most during my workday.
-Its an opinionated wrapper as its functionality to matches my workflow.
+`tmgit` is an opinionated git wrapper built with [Typer](https://typer.tiangolo.com/) to automate the commands I use the most during my workday to match my workflow.
 
 Hopefully you can find it useful too! :D
 

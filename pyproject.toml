@@ -1,7 +1,7 @@
 [project]
 name = "tmgit"
 version = "0.1.0"
-description = "Add your description here"
+description = "tmgit is an opinionated git wrapper built with Typer to automate the commands I use the most during my workday to match my workflow."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
