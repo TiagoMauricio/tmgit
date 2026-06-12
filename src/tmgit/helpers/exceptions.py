@@ -4,3 +4,7 @@ class IsNotDirectory(Exception):
 
 class IsNotGitRepository(Exception):
     pass
+
+
+class ExecutionError(Exception):
+    pass

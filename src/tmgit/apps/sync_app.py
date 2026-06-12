@@ -11,7 +11,6 @@ app = typer.Typer(no_args_is_help=True)
 
 
 # TODO:
-# - rework ls, make it fetch directories only, move _execute to a utils helper file
 # - build progress bar
 # - move git operations to its own app, extract generic functions, keep private ones
 @app.command(help=HELP_SYNC_WS)
@@ -19,20 +18,24 @@ def ws(name: str):
     config = load_config()
     if name in config:
         ws_location = config[name]
-        dir_list = subprocess.run(
-            ["ls", ws_location], capture_output=True, text=True
+        repo_list = subprocess.run(
+            ["find", ws_location, "-maxdepth", "1", "-type", "d"],
+            capture_output=True,
+            text=True,
         ).stdout.split("\n")
-        for dir in dir_list:
+        # Remove the directory itself and usual empty string at the end
+        repo_list.remove(ws_location)
+        repo_list.remove("")
+        for repo_path in repo_list:
             # ignore empty lines
             if dir:
-                repo_path = f"{config[name]}/{dir}"
                 try:
                     sync_repo(repo_path)
                 except IsNotDirectory:
                     print(
                         f"[yellow]WARNING[/yellow]: path {repo_path} is not a directory."
                     )
-                    print(f"[green]Ignoring {repo_path}[/green]")
+                    print(f"INFO: Ignoring {repo_path}")
                 except IsNotGitRepository:
                     print(
                         f"[yellow]WARNING[/yellow]: path {repo_path} is not a git repository."

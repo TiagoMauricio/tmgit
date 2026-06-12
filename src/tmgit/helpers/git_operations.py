@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
 
-from helpers.exceptions import IsNotDirectory, IsNotGitRepository
+from helpers.exceptions import ExecutionError, IsNotDirectory, IsNotGitRepository
 from rich import print
 from rich.console import Console
 
@@ -11,15 +11,15 @@ err_console = Console(stderr=True)
 # I know functions are usually supposed to do only one thing
 # however it seems a bit overkill to implement a function just
 # to handle output
-def _execute(command_list: list):
-    print(f"[green]Executing:[/green] {command_list}")
-    result = subprocess.run(command_list, capture_output=True, text=True)
+def _execute(command_list: list, work_dir: str = str(Path.cwd())):
+    # print(f"[green]Executing:[/green] {command_list}")
+    result = subprocess.run(command_list, cwd=work_dir, capture_output=True, text=True)
     if result.returncode == 0:
-        print(result.stdout)
+        # print(result.stdout)
         return result
     else:
         err_console.print(f"[red]{result.stderr}[/red]")
-        exit(1)
+        raise ExecutionError
 
 
 def _check_if_git(path: str):
@@ -45,7 +45,8 @@ def _find_current(repo_dir: str | None = None):
 
 
 def _find_main(repo_dir: str | None = None):
-    pass
+    result = _execute(["git", "symbolic-ref", "refs/remotes/origin/HEAD", "--short"])
+    return result.stdout.split("/")[1].strip()
 
 
 def _commit_current(message: str):
@@ -63,8 +64,13 @@ def sync_repo(repo_path: str):
         raise IsNotDirectory(f"Provided path {repo_path} is not a directory.")
     _check_if_git(repo_path)
     print(f"Synching repo: {repo_path}")
-    current_branch = _find_current(repo_path)
-    subprocess.run(["echo", f"git pull origin {current_branch}"], cwd=repo_path)
+    main_branch = _find_main(repo_path)
+    # TODO: fetch output and send to file log
+    try:
+        result = _execute(["git", "pull", "origin", main_branch], work_dir=repo_path)
+        print(result)
+    except ExecutionError as e:
+        print(e)
 
 
 def send(message):
