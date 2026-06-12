@@ -1,4 +1,6 @@
-HELP_SYNC_TARGET="Choose what you want to sync, use current for the branch you're on (only inside git repo)"
-HELP_SEND_COMMAND="Pushes to current HEAD branch. If [-m|--message] is provided, commits the tracked changed files using the using -am option"
-HELP_SYNC_COMMAND="Synchronize your local workspace with remote. Run 'tmgit sync --help' to see the options"
-
+HELP_SYNC_TARGET = "Choose what you want to sync, use current for the branch you're on (only inside git repo)."
+HELP_SEND_COMMAND = "Pushes to current HEAD branch. If [-m|--message] is provided, commits the tracked changed files using the using -am option."
+HELP_SYNC_COMMAND = "Sync your local workspace with remote. Run 'tmgit sync --help' to see the options. If repo being synced has pending changes, the repo will be ignored."
+HELP_SYNC_WS = "Sync all of the repos inside workspace [NAME] to main branch. Repos that cannot be synched will be ignored."
+HELP_SYNC_CURRENT = "Sync the current branch in the present repo."
+HELP_SYNC_REPO = "Sync present repo to main branch."

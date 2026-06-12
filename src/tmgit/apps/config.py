@@ -1,12 +1,11 @@
 import json
-import typer
 from pathlib import Path
-from rich import print
-from rich.pretty import pprint
-from rich.table import Table
-from rich.console import Console
 
+import typer
 from platformdirs import PlatformDirs
+from rich import print
+from rich.console import Console
+from rich.table import Table
 
 DEFAULT_GIT_DIR = Path.home() / "git"
 CONFIG_FILE_NAME = "config.json"
@@ -17,20 +16,26 @@ CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 err_console = Console(stderr=True)
 app = typer.Typer(no_args_is_help=True)
 
+
 def _init_config():
     return {"git_ws_dir": str(DEFAULT_GIT_DIR)}
 
+
 def _save_config(config: dict):
     CONFIG_FILE.write_text(json.dumps(config, indent=2))
+
 
 def load_config():
     if CONFIG_FILE.exists():
         return json.loads(CONFIG_FILE.read_text())
 
-    err_console.print(f"Config file does not exist. Creating config at: [green]{CONFIG_FILE}[/green]")
+    err_console.print(
+        f"Config file does not exist. Creating config at: [green]{CONFIG_FILE}[/green]"
+    )
     new_config = _init_config()
     _save_config(new_config)
     return new_config
+
 
 @app.command()
 def show():
@@ -39,6 +44,7 @@ def show():
     for workspace, path in config.items():
         table.add_row(workspace, path)
     print(table)
+
 
 @app.command()
 def add(name: str, path: Path):
@@ -50,6 +56,7 @@ def add(name: str, path: Path):
     _save_config(config)
     show()
 
+
 @app.command()
 def remove(name: str):
     config = load_config()
@@ -58,8 +65,11 @@ def remove(name: str):
         print(f"[green]SUCCESS:[/green] Removed workspace {name} from config.")
         _save_config(config)
     else:
-        err_console.print(f"[red]ERROR:[/red] Config does not contain a workspace with name {name}")
+        err_console.print(
+            f"[red]ERROR:[/red] Config does not contain a workspace with name {name}"
+        )
         show()
+
 
 @app.command()
 def edit(name: str, path: Path):
@@ -67,8 +77,10 @@ def edit(name: str, path: Path):
     if not path.exists():
         print(f"[red]ERROR:[/red] Workspace directory '{path}' does not exist.")
         exit(1)
-    elif not name in config:
-        err_console.print(f"[red]ERROR:[/red] Workspace {name} it not configured. Use 'tmgit config add NAME PATH' to configure.")
+    elif name not in config:
+        err_console.print(
+            f"[red]ERROR:[/red] Workspace {name} it not configured. Use 'tmgit config add NAME PATH' to configure."
+        )
         exit(1)
     config[name] = str(path)
     _save_config(config)
