@@ -67,8 +67,16 @@ def sync_repo(repo_path: str):
     main_branch = _find_main(repo_path)
     # TODO: fetch output and send to file log
     try:
+        checkout = _execute(["git", "checkout", main_branch], work_dir=repo_path)
+        print("SUCCESS: checkout to main") if checkout.returncode == 0 else print(
+            "ERROR: failed checkout", checkout.stderr
+        )
         result = _execute(["git", "pull", "origin", main_branch], work_dir=repo_path)
-        print(result)
+        if result.returncode != 0:
+            raise ExecutionError(result.stderr)
+        else:
+            print("SUCCESS: Repo was synched")
+
     except ExecutionError as e:
         print(e)
 
