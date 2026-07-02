@@ -12,7 +12,7 @@ err_console = Console(stderr=True)
 # I know functions are usually supposed to do only one thing
 # however it seems a bit overkill to implement a function just
 # to handle output
-def _execute(command_list: list, work_dir: str = str(Path.cwd())):
+def _execute(command_list: list, work_dir: str | None = str(Path.cwd())):
     # print(f"[green]Executing:[/green] {command_list}")
     result = subprocess.run(command_list, cwd=work_dir, capture_output=True, text=True)
     if result.returncode == 0:
@@ -46,7 +46,10 @@ def _find_current(repo_dir: str | None = None):
 
 
 def _find_main(repo_dir: str | None = None):
-    result = _execute(["git", "symbolic-ref", "refs/remotes/origin/HEAD", "--short"])
+    result = _execute(
+        ["git", "symbolic-ref", "refs/remotes/origin/HEAD", "--short"],
+        work_dir=repo_dir,
+    )
     return result.stdout.split("/")[1].strip()
 
 
