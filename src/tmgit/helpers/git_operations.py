@@ -1,9 +1,10 @@
 import subprocess
 from pathlib import Path
 
-from helpers.exceptions import ExecutionError, IsNotDirectory, IsNotGitRepository
 from rich import print
 from rich.console import Console
+
+from tmgit.helpers.exceptions import ExecutionError, IsNotDirectory, IsNotGitRepository
 
 err_console = Console(stderr=True)
 

@@ -1,11 +1,11 @@
 from typing import Annotated
 
-import helpers.constants as constants
-import helpers.git_operations as git_operations
 import typer
-from apps import sync_app
-from apps.config import app as tmconfig_app
-from apps.config import load_config
+
+from tmgit.apps import sync_app
+from tmgit.apps.config import app as tmconfig_app
+from tmgit.apps.config import load_config
+from tmgit.helpers import constants, git_operations
 
 # App inits
 app = typer.Typer(no_args_is_help=True)

@@ -1,11 +1,12 @@
 import subprocess
 
 import typer
-from apps.config import load_config
-from helpers.constants import HELP_SYNC_CURRENT, HELP_SYNC_REPO, HELP_SYNC_WS
-from helpers.exceptions import IsNotDirectory, IsNotGitRepository
-from helpers.git_operations import err_console, sync_repo
 from rich import print
+
+from tmgit.apps.config import load_config
+from tmgit.helpers.constants import HELP_SYNC_CURRENT, HELP_SYNC_REPO, HELP_SYNC_WS
+from tmgit.helpers.exceptions import IsNotDirectory, IsNotGitRepository
+from tmgit.helpers.git_operations import err_console, sync_repo
 
 app = typer.Typer(no_args_is_help=True)
 
