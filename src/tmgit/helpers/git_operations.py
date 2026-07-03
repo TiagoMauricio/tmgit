@@ -63,26 +63,29 @@ def sync_current():
     return _execute(["git", "pull", "origin", current_branch])
 
 
-def sync_repo(repo_path: str):
+def sync_repo(repo_path: str, current: bool = False):
     if not Path(repo_path).is_dir():
         raise IsNotDirectory(f"Provided path {repo_path} is not a directory.")
     _check_if_git(repo_path)
-    print(f"Synching repo: {repo_path}")
-    main_branch = _find_main(repo_path)
+    print(f"INFO: Synching repo: {repo_path}")
     # TODO: fetch output and send to file log
     try:
-        checkout = _execute(["git", "checkout", main_branch], work_dir=repo_path)
-        print("SUCCESS: checkout to main") if checkout.returncode == 0 else print(
-            "ERROR: failed checkout", checkout.stderr
-        )
-        result = _execute(["git", "pull", "origin", main_branch], work_dir=repo_path)
+        if not current:
+            main_branch = _find_main(repo_path)
+            checkout = _execute(["git", "checkout", main_branch], work_dir=repo_path)
+            print("[green]SUCCESS:[/green] checkout to main") if checkout.returncode == 0 else print(
+                "[red]ERROR:[/red] failed checkout", checkout.stderr
+            )
+            result = _execute(["git", "pull", "origin", main_branch], work_dir=repo_path)
+        else:
+            result = _execute(["git", "pull", "origin", "HEAD"], work_dir=repo_path)
         if result.returncode != 0:
             raise ExecutionError(result.stderr)
         else:
-            print("SUCCESS: Repo was synched")
+            print("[green]SUCCESS:[/green] Repo was synched")
 
-    except ExecutionError as e:
-        print(e)
+    except ExecutionError:
+        print(f"[yellow]WARNING:[/yellow] Skipping: {repo_path}")
 
 
 def send(message):

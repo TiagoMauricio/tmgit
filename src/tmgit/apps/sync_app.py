@@ -1,6 +1,7 @@
 import subprocess
 
-import typer
+from pathlib import Path
+from typer import Typer
 from rich import print
 
 from tmgit.apps.config import load_config
@@ -8,7 +9,7 @@ from tmgit.helpers.constants import HELP_SYNC_CURRENT, HELP_SYNC_REPO, HELP_SYNC
 from tmgit.helpers.exceptions import IsNotDirectory, IsNotGitRepository
 from tmgit.helpers.git_operations import err_console, sync_repo
 
-app = typer.Typer(no_args_is_help=True)
+app: Typer = Typer(no_args_is_help=True)
 
 
 # TODO:
@@ -28,20 +29,18 @@ def ws(name: str):
         repo_list.remove(ws_location)
         repo_list.remove("")
         for repo_path in repo_list:
-            # ignore empty lines
-            if dir:
-                try:
-                    sync_repo(repo_path)
-                except IsNotDirectory:
-                    print(
-                        f"[yellow]WARNING[/yellow]: path {repo_path} is not a directory."
-                    )
-                    print(f"INFO: Ignoring {repo_path}")
-                except IsNotGitRepository:
-                    print(
-                        f"[yellow]WARNING[/yellow]: path {repo_path} is not a git repository."
-                    )
-                    print(f"INFO: Ignoring {repo_path}")
+            try:
+                sync_repo(repo_path)
+            except IsNotDirectory:
+                print(
+                    f"[yellow]WARNING[/yellow]: path {repo_path} is not a directory."
+                )
+                print(f"INFO: Ignoring {repo_path}")
+            except IsNotGitRepository:
+                print(
+                    f"[yellow]WARNING[/yellow]: path {repo_path} is not a git repository."
+                )
+                print(f"INFO: Ignoring {repo_path}")
         return
     err_console.print("ERROR: name doesn't exist")
     exit(1)
@@ -49,9 +48,16 @@ def ws(name: str):
 
 @app.command(help=HELP_SYNC_CURRENT)
 def current():
-    pass
-
+    try:
+        sync_repo(repo_path = str(Path.cwd()), current=True)
+    except IsNotGitRepository:
+        print(f"[red]ERROR:[/red] This directory is not a repository.")
+        exit(1)
 
 @app.command(help=HELP_SYNC_REPO)
 def repo():
-    pass
+    try:
+        sync_repo(str(Path.cwd()))
+    except IsNotGitRepository:
+        print(f"[red]ERROR:[/red] This directory is not a repository.")
+        exit(1)
